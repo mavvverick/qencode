@@ -1,0 +1,5 @@
+package qencode
+
+var schema = `{"query":{"source":"https://yovo-app.storage.googleapis.com/%v","callback_url":"%v","format":[{"output":"mp4","destination":{"url":"s3://storage.googleapis.com/yovo-app/%v","key":"%v","secret":"%v","permissions":"public-read"},"video_codec":"libx265","framerate":"30","keyframe":"25","file_extension":"mp4","size":"%v","video_codec_parameters":{"vprofile":"baseline","level":"31","coder":"0","flags2":"-bpyramid+fastpskip-dct8x8","partitions":"+parti8x8+parti4x4+partp8x8+partb8x8","directpred":"2","me_method":"hex"},"start_time":"0","duration":"30","audio_bitrate":"32","audio_sample_rate":"44100","audio_channels_number":"2"}]}}`
+
+var schema2 = `{"query":{"source":"https://yovo-app.storage.googleapis.com/%v","callback_url":"%v","format":[{"output":"mp4","destination":{"url":"s3://storage.googleapis.com/yovo-app/%v","key":"%v","secret":"%v","permissions":"public-read"},"video_codec":"libx265","framerate":"30","keyframe":"25","file_extension":"mp4","size":"%v","start_time":"0","duration":"30","audio_bitrate":"64","audio_sample_rate":"44100","audio_channels_number":"2"}]}}`
