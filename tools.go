@@ -3,6 +3,8 @@ package qencode
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
+	"strings"
 )
 
 type QueryParams struct {
@@ -41,6 +43,7 @@ type VideoCodecParameters struct {
 	Partitions string `json:"partitions,omitempty"`
 	Directpred string `json:"directpred,omitempty"`
 	MeMethod   string `json:"me_method,omitempty"`
+	BStrategy  string `json:"b_strategy,omitempty"`
 }
 
 type Destination struct {
@@ -67,50 +70,49 @@ func QueryBuilder(params *TaskParams, t *TaskServiceOp) (string, error) {
 	}
 
 	for _, resolution := range params.Resolutions {
-		// *q.Query.Format = append(*q.Query.Format, Format{
-		// 	Output:        "mp4",
-		// 	Size:          resolution,
-		// 	Bitrate:       400,
-		// 	VideoCodec:    "libx265",
-		// 	Framerate:     "30",
-		// 	FileExtension: "mp4",
-		// 	// StartTime:           params.StartTime,
-		// 	// Duration:            params.Duration,
-		// 	// AudioBitrate:        "64",
-		// 	// AudioSampleRate:     "44100",
-		// 	// AudioChannelsNumber: "2",
-		// 	Destination: &Destination{
-		// 		Key:         t.client.StorageKey,
-		// 		Secret:      t.client.StorageSecret,
-		// 		URL:         fmt.Sprintf("s3://storage.googleapis.com/%v/%v", t.client.Bucket, params.FinalPath),
-		// 		Permissions: "public-read",
-		// 	},
-		// })
+		data := strings.Split(resolution, "|")
+		reso := data[0]
+		bitrate, err := strconv.ParseInt(data[1], 10, 64)
+		if err != nil {
+			return "", err
+		}
 
 		form := Format{
-			Output:        "mp4",
-			Bitrate:       400,
-			VideoCodec:    "libx264",
-			Framerate:     "30",
-			FileExtension: "mp4",
-			StartTime:     params.StartTime,
-			Duration:      params.Duration,
-			// AudioBitrate:        "64",
-			// AudioSampleRate:     "44100",
-			// AudioChannelsNumber: "2",
+			Output:              "mp4",
+			Bitrate:             bitrate,
+			Size:                Resolutions[reso],
+			VideoCodec:          "libx265",
+			Framerate:           "30",
+			FileExtension:       "mp4",
+			StartTime:           params.StartTime,
+			Duration:            params.Duration,
+			AudioBitrate:        "64",
+			AudioSampleRate:     "44100",
+			AudioChannelsNumber: "2",
 			Destination: &Destination{
 				Key:         t.client.StorageKey,
 				Secret:      t.client.StorageSecret,
-				URL:         fmt.Sprintf("s3://storage.googleapis.com/%v/%v/yo%v/%v", t.client.Bucket, params.PostID, resolution, params.Name),
+				URL:         fmt.Sprintf("s3://storage.googleapis.com/%v/%v/yo%v/%v", t.client.Bucket, params.PostID, reso, params.Name),
 				Permissions: "public-read",
+			},
+			VideoCodecParameters: &VideoCodecParameters{
+				Vprofile:   "high",
+				Coder:      "0",
+				Level:      "31",
+				BStrategy:  "2",
+				Flags2:     "-bpyramid+fastpskip-dct8x8",
+				Partitions: "+parti8x8+parti4x4+partp8x8+partb8x8",
+				Directpred: "2",
+				MeMethod:   "hex",
 			},
 		}
 
-		if params.IsH265 {
-			form.VideoCodec = "libx265"
+		if params.IsH264 {
+			form.VideoCodec = "libx264"
 		}
 
-		if resolution == "web" {
+		if reso == "web" {
+			form.VideoCodec = "libx264"
 			form.Size = Resolutions["540p"]
 			form.Destination.URL = fmt.Sprintf("s3://storage.googleapis.com/%v/%v/%v", t.client.Bucket, params.PostID, params.Name)
 			form.Logo = &Logo{
@@ -118,8 +120,6 @@ func QueryBuilder(params *TaskParams, t *TaskServiceOp) (string, error) {
 				X:      "12",
 				Y:      "12",
 			}
-		} else {
-			form.Size = Resolutions[resolution]
 		}
 
 		*q.Query.Format = append(*q.Query.Format, form)

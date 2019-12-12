@@ -59,6 +59,7 @@ type TokenRoot struct {
 var FrameRate = "30"
 
 var Resolutions = map[string]string{
+	"144p":  "144x256",
 	"240p":  "240x352",
 	"360p":  "360x480",
 	"480p":  "480x858",
@@ -80,7 +81,7 @@ type TaskParams struct {
 	StartTime   string
 	Duration    string
 	IsLogo      bool
-	IsH265      bool
+	IsH264      bool
 }
 
 // NewClient creates http client for api

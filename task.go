@@ -111,7 +111,6 @@ func (t *TaskServiceOp) Encode(ctx context.Context, params *TaskParams) (*Encode
 	}
 
 	payload := strings.NewReader(fmt.Sprintf(`task_token=%v&payload=%v&query=%v`, params.TaskToken, params.Payload, query))
-
 	//fmt.Println(payload)
 	// fmt.Println("+++++++++ NIL ++++++++")
 	// return nil, nil, nil
