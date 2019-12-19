@@ -27,6 +27,7 @@ type Format struct {
 	Keyframe             string                `json:"keyframe,omitempty"`
 	FileExtension        string                `json:"file_extension,omitempty"`
 	VideoCodecParameters *VideoCodecParameters `json:"video_codec_parameters,omitempty"`
+	TagVideo             string                `json:"tag_video,omitempty"`
 	StartTime            string                `json:"start_time,omitempty"`
 	Duration             string                `json:"duration,omitempty"`
 	AudioBitrate         string                `json:"audio_bitrate,omitempty"`
@@ -69,6 +70,14 @@ func QueryBuilder(params *TaskParams, t *TaskServiceOp) (string, error) {
 		},
 	}
 
+	//REMOVE
+	// if params.Name == "boomerang.mp4" {
+	// 	q.Query.Source = fmt.Sprintf("https://%v.storage.googleapis.com/%v/boomerang.mp4", t.client.Bucket, params.PostID)
+	// 	params.Resolutions = []string{"540p|1200"}
+	// 	params.IsH264 = true
+	// }
+	//REMOVE
+
 	for _, resolution := range params.Resolutions {
 		data := strings.Split(resolution, "|")
 		reso := data[0]
@@ -107,6 +116,12 @@ func QueryBuilder(params *TaskParams, t *TaskServiceOp) (string, error) {
 			},
 		}
 
+		//REMOVE
+		if params.Name == "boomerang.mp4" {
+			form.Destination.URL = fmt.Sprintf("s3://storage.googleapis.com/%v/%v/%v", t.client.Bucket, params.PostID, params.Name)
+		}
+		//REMOVE
+
 		if params.IsH264 {
 			form.VideoCodec = "libx264"
 		}
@@ -120,6 +135,10 @@ func QueryBuilder(params *TaskParams, t *TaskServiceOp) (string, error) {
 				X:      "12",
 				Y:      "12",
 			}
+		}
+
+		if form.VideoCodec == "libx265" {
+			form.TagVideo = "hvc1"
 		}
 
 		*q.Query.Format = append(*q.Query.Format, form)

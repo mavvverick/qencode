@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"strings"
 	"testing"
 )
 
@@ -61,13 +60,13 @@ func TestAction_MuiltipleCreate(t *testing.T) {
 		testMethod(t, r, http.MethodPost)
 	})
 
-	//postID := "-0q088aZg"
-	postID := "-1Evzw-Zg"
-	duration := strings.Split("9|6|1", "|")
-	//vids := []string{"intro.mp4", "1.mp4", "2.mp4", "boomerang.mp4"}
-	vids := []string{"intro.mp4"}
+	postID := "-0q088aZg"
+	//postID := "virat"
+	//duration := strings.Split("9|6|1", "|")
+	vids := []string{"intro.mp4", "1.mp4", "2.mp4"}
+	//vids := []string{"intro.mp4"}
 
-	for i, vid := range vids {
+	for _, vid := range vids {
 		task, _, err := client.Task.Create(ctx)
 		if err != nil {
 			t.Fatalf("unexpected error: %s", err)
@@ -79,15 +78,15 @@ func TestAction_MuiltipleCreate(t *testing.T) {
 			Name:       vid,
 			SourcePath: fmt.Sprintf("%v/raw/%v", postID, vid),
 			//Resolutions: []string{"540p|1500", "240p|600", "web|1500"},
-			Resolutions: []string{"web|1500"},
+			Resolutions: []string{"540p|1500"},
 			Payload:     postID,
-			StartTime:   "0",
-			Duration:    "3",
+			// StartTime:   "0",
+			// Duration:    "3",
 		}
 
-		if i < 3 {
-			params.Duration = duration[i]
-		}
+		// if i < 3 {
+		// 	params.Duration = duration[i]
+		// }
 
 		encode, _, err := client.Task.Encode(ctx, params)
 
