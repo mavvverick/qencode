@@ -2,6 +2,7 @@ package qencode
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -33,6 +34,7 @@ func setup() {
 	client.CallbackURL = os.Getenv("QUENCODE_CALLBACK_URL")
 	client.Bucket = os.Getenv("QUENCODE_BUCKET")
 	client.WATERMARK = os.Getenv("QUENCODE_WATERMARK")
+	fmt.Println(os.Getenv("QUENCODE_BUCKET"), os.Getenv("QUENCODE_CALLBACK_URL"))
 }
 
 func teardown() {

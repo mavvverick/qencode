@@ -44,7 +44,6 @@ func (t *TaskServiceOp) SessionToken(ctx context.Context) (*TokenRoot, *Response
 		}
 	}
 
-	fmt.Println("Request")
 	payload := strings.NewReader(fmt.Sprintf("api_key=%v", t.client.Key))
 	req, err := t.client.NewRequest(ctx, http.MethodPost, path, payload)
 	if err != nil {

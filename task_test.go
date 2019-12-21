@@ -60,40 +60,42 @@ func TestAction_MuiltipleCreate(t *testing.T) {
 		testMethod(t, r, http.MethodPost)
 	})
 
-	postID := "-0q088aZg"
-	//postID := "virat"
-	//duration := strings.Split("9|6|1", "|")
+	//postIDS := []string{"0aoz-3aZa", "xoTk-3-WRa", "ZATkaqaZa", "xooka3aZa", "oboka3-Za", "10Tk-q-Wa", "Y3M7-3-Wa", "uAI4a3-Wa", "aGiVaq-Za", "lZX4-3aZa", "Agl7aqaZa", "vJeV-q-Wa", "evzvaq-Wa", "3MRF-qaZa"}
+	postIDS := []string{"vJeV-q-Wa"}
 	vids := []string{"intro.mp4", "1.mp4", "2.mp4"}
 	//vids := []string{"intro.mp4"}
+	for _, postID := range postIDS {
+		for _, vid := range vids {
+			task, _, err := client.Task.Create(ctx)
+			if err != nil {
+				t.Fatalf("unexpected error: %s", err)
+			}
 
-	for _, vid := range vids {
-		task, _, err := client.Task.Create(ctx)
-		if err != nil {
-			t.Fatalf("unexpected error: %s", err)
+			params := &TaskParams{
+				TaskToken:  task.TaskToken,
+				PostID:     postID,
+				Name:       vid,
+				SourcePath: fmt.Sprintf("%v/raw/%v", postID, vid),
+				//Resolutions: []string{"540p|1500", "240p|600", "web|1500"},
+				Resolutions: []string{"540p|500", "240p|320"},
+				Payload:     postID,
+				// StartTime:   "0",
+				// Duration:    "3",
+			}
+
+			// if i < 3 {
+			// 	params.Duration = duration[i]
+			// }
+
+			encode, _, err := client.Task.Encode(ctx, params)
+
+			if err != nil {
+				t.Fatalf("unexpected error: %s", err)
+			}
+
+			fmt.Println(encode)
 		}
 
-		params := &TaskParams{
-			TaskToken:  task.TaskToken,
-			PostID:     postID,
-			Name:       vid,
-			SourcePath: fmt.Sprintf("%v/raw/%v", postID, vid),
-			//Resolutions: []string{"540p|1500", "240p|600", "web|1500"},
-			Resolutions: []string{"540p|1500"},
-			Payload:     postID,
-			// StartTime:   "0",
-			// Duration:    "3",
-		}
-
-		// if i < 3 {
-		// 	params.Duration = duration[i]
-		// }
-
-		encode, _, err := client.Task.Encode(ctx, params)
-
-		if err != nil {
-			t.Fatalf("unexpected error: %s", err)
-		}
-
-		fmt.Println(encode)
 	}
+
 }

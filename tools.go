@@ -23,8 +23,8 @@ type Format struct {
 	Bitrate              int64                 `json:"bitrate,omitempty"`
 	VideoCodec           string                `json:"video_codec,omitempty"`
 	Destination          *Destination          `json:"destination,omitempty"`
-	Framerate            string                `json:"framerate,omitempty"`
-	Keyframe             string                `json:"keyframe,omitempty"`
+	Framerate            float32               `json:"framerate,omitempty"`
+	Keyframe             int32                 `json:"keyframe,omitempty"`
 	FileExtension        string                `json:"file_extension,omitempty"`
 	VideoCodecParameters *VideoCodecParameters `json:"video_codec_parameters,omitempty"`
 	TagVideo             string                `json:"tag_video,omitempty"`
@@ -37,14 +37,22 @@ type Format struct {
 }
 
 type VideoCodecParameters struct {
-	Vprofile   string `json:"vprofile,omitempty"`
-	Level      string `json:"level,omitempty"`
-	Coder      string `json:"coder,omitempty"`
-	Flags2     string `json:"flags2,omitempty"`
-	Partitions string `json:"partitions,omitempty"`
-	Directpred string `json:"directpred,omitempty"`
-	MeMethod   string `json:"me_method,omitempty"`
-	BStrategy  string `json:"b_strategy,omitempty"`
+	Vprofile   string  `json:"vprofile,omitempty"`
+	Level      int32   `json:"level,omitempty"`
+	Coder      string  `json:"coder,omitempty"`
+	Flags      string  `json:"flags,omitempty"`
+	Flags2     string  `json:"flags2,omitempty"`
+	Pass2      int8    `json:"two_pass,omitempty"`
+	Qcomp      string  `json:"qcomp,omitempty"`
+	Subq       string  `json:"subq,omitempty"`
+	Qmin       string  `json:"qmin,omitempty"`
+	Qmax       string  `json:"qmax,omitempty"`
+	Qdiff      string  `json:"qdiff,omitempty"`
+	Iqfactor   float32 `json:"i_qfactor,omitempty"`
+	Partitions string  `json:"partitions,omitempty"`
+	Directpred string  `json:"directpred,omitempty"`
+	MeMethod   string  `json:"me_method,omitempty"`
+	BStrategy  int8    `json:"b_strategy,omitempty"`
 }
 
 type Destination struct {
@@ -91,13 +99,13 @@ func QueryBuilder(params *TaskParams, t *TaskServiceOp) (string, error) {
 			Bitrate:             bitrate,
 			Size:                Resolutions[reso],
 			VideoCodec:          "libx265",
-			Framerate:           "30",
+			Framerate:           30,
 			FileExtension:       "mp4",
 			StartTime:           params.StartTime,
 			Duration:            params.Duration,
-			AudioBitrate:        "64",
+			AudioBitrate:        "48",
 			AudioSampleRate:     "44100",
-			AudioChannelsNumber: "2",
+			AudioChannelsNumber: "1",
 			Destination: &Destination{
 				Key:         t.client.StorageKey,
 				Secret:      t.client.StorageSecret,
@@ -105,14 +113,22 @@ func QueryBuilder(params *TaskParams, t *TaskServiceOp) (string, error) {
 				Permissions: "public-read",
 			},
 			VideoCodecParameters: &VideoCodecParameters{
-				Vprofile:   "high",
+				Vprofile:   "main",
 				Coder:      "0",
-				Level:      "31",
-				BStrategy:  "2",
+				Level:      31,
+				BStrategy:  2,
 				Flags2:     "-bpyramid+fastpskip-dct8x8",
 				Partitions: "+parti8x8+parti4x4+partp8x8+partb8x8",
-				Directpred: "2",
+				Directpred: "3",
 				MeMethod:   "hex",
+				Pass2:      1,
+				Iqfactor:   0.7,
+				// Flags:  "pass1'pass2'",
+				// Flags2: "+bpyramid+wpred+mixed_refs+dct8x8+fastpskip",
+				// Qcomp:  "0.6",
+				// Qmin:   "3",
+				// Qmax:   "7",
+				// Qdiff:  "4",
 			},
 		}
 
