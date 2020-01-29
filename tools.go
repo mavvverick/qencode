@@ -78,14 +78,6 @@ func QueryBuilder(params *TaskParams, t *TaskServiceOp) (string, error) {
 		},
 	}
 
-	//REMOVE
-	// if params.Name == "boomerang.mp4" {
-	// 	q.Query.Source = fmt.Sprintf("https://%v.storage.googleapis.com/%v/boomerang.mp4", t.client.Bucket, params.PostID)
-	// 	params.Resolutions = []string{"540p|1200"}
-	// 	params.IsH264 = true
-	// }
-	//REMOVE
-
 	for _, resolution := range params.Resolutions {
 		data := strings.Split(resolution, "|")
 		reso := data[0]
@@ -132,11 +124,9 @@ func QueryBuilder(params *TaskParams, t *TaskServiceOp) (string, error) {
 			},
 		}
 
-		//REMOVE
 		if params.Name == "boomerang.mp4" {
-			form.Destination.URL = fmt.Sprintf("s3://storage.googleapis.com/%v/%v/%v", t.client.Bucket, params.PostID, params.Name)
+			q.Query.Source = fmt.Sprintf("https://%v.storage.googleapis.com/%v/boomerang.mp4", t.client.Bucket, params.PostID)
 		}
-		//REMOVE
 
 		if params.IsH264 {
 			form.VideoCodec = "libx264"

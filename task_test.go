@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -61,9 +62,10 @@ func TestAction_MuiltipleCreate(t *testing.T) {
 	})
 
 	//postIDS := []string{"0aoz-3aZa", "xoTk-3-WRa", "ZATkaqaZa", "xooka3aZa", "oboka3-Za", "10Tk-q-Wa", "Y3M7-3-Wa", "uAI4a3-Wa", "aGiVaq-Za", "lZX4-3aZa", "Agl7aqaZa", "vJeV-q-Wa", "evzvaq-Wa", "3MRF-qaZa"}
-	postIDS := []string{"vJeV-q-Wa"}
-	vids := []string{"intro.mp4", "1.mp4", "2.mp4"}
-	//vids := []string{"intro.mp4"}
+	postIDS := []string{"_-Cap6aZH"}
+	vids := []string{"1.mp4", "2.mp4", "intro.mp4", "boomerang.mp4"}
+
+	fmt.Println(os.Getenv("QUENCODE_RESOLUTIONS"))
 	for _, postID := range postIDS {
 		for _, vid := range vids {
 			task, _, err := client.Task.Create(ctx)
@@ -72,21 +74,13 @@ func TestAction_MuiltipleCreate(t *testing.T) {
 			}
 
 			params := &TaskParams{
-				TaskToken:  task.TaskToken,
-				PostID:     postID,
-				Name:       vid,
-				SourcePath: fmt.Sprintf("%v/raw/%v", postID, vid),
-				//Resolutions: []string{"540p|1500", "240p|600", "web|1500"},
-				Resolutions: []string{"540p|500", "240p|320"},
+				TaskToken:   task.TaskToken,
+				PostID:      postID,
+				Name:        vid,
+				SourcePath:  fmt.Sprintf("%v/raw/%v", postID, vid),
+				Resolutions: strings.Split(os.Getenv("QUENCODE_RESOLUTIONS"), ","),
 				Payload:     postID,
-				// StartTime:   "0",
-				// Duration:    "3",
 			}
-
-			// if i < 3 {
-			// 	params.Duration = duration[i]
-			// }
-
 			encode, _, err := client.Task.Encode(ctx, params)
 
 			if err != nil {
@@ -95,6 +89,52 @@ func TestAction_MuiltipleCreate(t *testing.T) {
 
 			fmt.Println(encode)
 		}
+
+	}
+
+}
+
+func TestAction_Mvf(t *testing.T) {
+
+	setup()
+	defer teardown()
+	mux.HandleFunc("/v1/quencode/1", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPost)
+	})
+
+	fmt.Println(os.Getenv("QUENCODE_RESOLUTIONS"))
+	sum := 0
+	for i := 1; i <= 16; i++ {
+		sum += i
+
+		task, _, err := client.Task.Create(ctx)
+		if err != nil {
+			t.Fatalf("unexpected error: %s", err)
+		}
+
+		name := fmt.Sprintf("video_%v.mp4", i)
+		folder := "mvf/2"
+
+		params := &TaskParams{
+			TaskToken:   task.TaskToken,
+			PostID:      folder,
+			Name:        name,
+			SourcePath:  fmt.Sprintf("%v/%v", folder, name),
+			Resolutions: strings.Split(os.Getenv("QUENCODE_RESOLUTIONS"), ","),
+			Payload:     name,
+			// StartTime:   "0",
+			// Duration:    "3",
+		}
+
+		//fmt.Println(params)
+
+		encode, _, err := client.Task.Encode(ctx, params)
+
+		if err != nil {
+			t.Fatalf("unexpected error: %s", err)
+		}
+
+		fmt.Println(encode)
 
 	}
 
