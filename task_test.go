@@ -37,12 +37,11 @@ func TestAction_Create(t *testing.T) {
 
 	params := &TaskParams{
 		TaskToken:   task.TaskToken,
-		SourcePath:  "41ysdzbWg/1.mp4",
-		FinalPath:   "41ysdzbWg/7.mp4",
-		Resolutions: []string{Resolutions["540p"], Resolutions["240p"]},
-		Payload:     fmt.Sprintf(`%v|%v`, os.Getenv("QENCODE_WEBHOOK_ACCESS"), "41ysdzbWg"),
-		StartTime:   "0",
-		Duration:    "80",
+		PostID:      "41ysdzbWg",
+		Name:        "1.mp4",
+		SourcePath:  fmt.Sprintf("%v/raw/%v", "41ysdzbWg", "1.mp4"),
+		Resolutions: strings.Split(os.Getenv("QUENCODE_RESOLUTIONS"), ","),
+		Payload:     "41ysdzbWg|1",
 	}
 
 	encode, _, err := client.Task.Encode(ctx, params)

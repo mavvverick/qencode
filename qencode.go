@@ -82,6 +82,7 @@ type TaskParams struct {
 	Duration    string
 	IsLogo      bool
 	IsH264      bool
+	Upscale     bool
 }
 
 // NewClient creates http client for api
