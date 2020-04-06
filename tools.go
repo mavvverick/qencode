@@ -14,6 +14,7 @@ type QueryParams struct {
 type Query struct {
 	Source      string    `json:"source,omitempty"`
 	CallbackURL string    `json:"callback_url,omitempty"`
+	Payload     string    `json:"payload,omitempty"`
 	Format      *[]Format `json:"format,omitempty"`
 	Upscale     bool      `json:"upscale"`
 }
@@ -75,6 +76,7 @@ func QueryBuilder(params *TaskParams, t *TaskServiceOp) (string, error) {
 		Query: &Query{
 			Source:      fmt.Sprintf("https://%v.storage.googleapis.com/%v", t.client.Bucket, params.SourcePath),
 			CallbackURL: t.client.CallbackURL,
+			Payload:     params.Payload,
 			Format:      &[]Format{},
 			Upscale:     params.Upscale,
 		},

@@ -101,16 +101,23 @@ func (t *TaskServiceOp) Create(ctx context.Context) (*CreateRoot, *Response, err
 
 //Encode beigns the custom task
 func (t *TaskServiceOp) Encode(ctx context.Context, params *TaskParams) (*EncodeRoot, *Response, error) {
+	var payload *strings.Reader
 	path := "start_encode2"
-
 	//query := fmt.Sprintf(schema2, params.SourcePath, t.client.CallbackURL, params.FinalPath, t.client.StorageKey, t.client.StorageSecret, Resolutions["540p"])
 	query, err := QueryBuilder(params, t)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	payload := strings.NewReader(fmt.Sprintf(`task_token=%v&payload=%v&query=%v`, params.TaskToken, params.Payload, query))
-	// fmt.Println(payload)
+	if t.client.BaseURL.Hostname() == "api.qencode.com" {
+		payload = strings.NewReader(fmt.Sprintf(`task_token=%v&payload=%v&query=%v`, params.TaskToken, params.Payload, query))
+	} else {
+		payload = strings.NewReader(query)
+	}
+
+	//For qencode body
+	//payload := strings.NewReader(fmt.Sprintf(`task_token=%v&payload=%v&query=%v`, params.TaskToken, params.Payload, query))
+	//fmt.Println(payload)
 	// fmt.Println("+++++++++ NIL ++++++++")
 	// return nil, nil, nil
 
