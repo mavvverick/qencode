@@ -147,6 +147,17 @@ func QueryBuilder(params *TaskParams, t *TaskServiceOp) (string, error) {
 			}
 		}
 
+		if reso == "webNew" {
+			form.VideoCodec = "libx264"
+			form.Size = Resolutions["540p"]
+			form.Destination.URL = fmt.Sprintf("s3://storage.googleapis.com/%v/%v/yo540p/%v", t.client.Bucket, params.PostID, params.Name)
+			form.Logo = &Logo{
+				Source: t.client.WATERMARK,
+				X:      "12",
+				Y:      "12",
+			}
+		}
+
 		if form.VideoCodec == "libx265" {
 			form.TagVideo = "hvc1"
 		}
